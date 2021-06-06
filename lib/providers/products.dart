@@ -73,7 +73,8 @@ class Products with ChangeNotifier {
   void addProduct(Product product) {
     final url = Uri.https(domain, "/products.json");
 
-    http.post(
+    http
+        .post(
       url,
       body: json.encode(
         {
@@ -84,17 +85,18 @@ class Products with ChangeNotifier {
           "isFavorite": product.isFavorite,
         },
       ),
-    );
-
-    final newProduct = Product(
-      title: product.title,
-      description: product.description,
-      price: product.price,
-      imageUrl: product.imageUrl,
-      id: DateTime.now().toString(),
-    );
-    _items.add(newProduct);
-    notifyListeners();
+    )
+        .then((res) {
+      final newProduct = Product(
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl,
+        id: json.decode(res.body)["name"],
+      );
+      _items.add(newProduct);
+      notifyListeners();
+    });
   }
 
   void updateProduct(String id, Product newProduct) {
