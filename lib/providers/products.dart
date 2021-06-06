@@ -70,10 +70,10 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  void addProduct(Product product) {
+  Future<void> addProduct(Product product) {
     final url = Uri.https(domain, "/products.json");
 
-    http
+    return http
         .post(
       url,
       body: json.encode(
