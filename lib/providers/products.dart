@@ -70,23 +70,22 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<void> addProduct(Product product) {
+  Future<void> addProduct(Product product) async {
     final url = Uri.https(domain, "/products.json");
+    try {
+      final res = await http.post(
+        url,
+        body: json.encode(
+          {
+            "title": product.title,
+            "description": product.description,
+            "imageUrl": product.imageUrl,
+            "price": product.price,
+            "isFavorite": product.isFavorite,
+          },
+        ),
+      );
 
-    return http
-        .post(
-      url,
-      body: json.encode(
-        {
-          "title": product.title,
-          "description": product.description,
-          "imageUrl": product.imageUrl,
-          "price": product.price,
-          "isFavorite": product.isFavorite,
-        },
-      ),
-    )
-        .then((res) {
       final newProduct = Product(
         title: product.title,
         description: product.description,
@@ -94,12 +93,13 @@ class Products with ChangeNotifier {
         imageUrl: product.imageUrl,
         id: json.decode(res.body)["name"],
       );
+
       _items.add(newProduct);
       notifyListeners();
-    }).catchError((error) {
+    } catch (error) {
       print(error);
       throw error;
-    });
+    }
   }
 
   void updateProduct(String id, Product newProduct) {
