@@ -70,6 +70,16 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
+  Future<void> fetchAndSetProducts() async {
+    final url = Uri.https(domain, "/products.json");
+    try {
+      final res = await http.get(url);
+      print(json.decode(res.body));
+    } catch (e) {
+      throw e;
+    }
+  }
+
   Future<void> addProduct(Product product) async {
     final url = Uri.https(domain, "/products.json");
     try {
