@@ -48,7 +48,9 @@ class Products with ChangeNotifier {
   // bool _showFavoritesOnly = false;
   final String authtoken;
 
-  Products(this.authtoken, this._items);
+  final String userId;
+
+  Products(this.authtoken, this.userId, this._items);
 
   List<Product> get items {
     // if (_showFavoritesOnly) {
@@ -76,7 +78,7 @@ class Products with ChangeNotifier {
   // }
 
   Future<void> fetchAndSetProducts() async {
-    final url = Uri.https(domain, "/products.json", {"auth": "$authtoken"});
+    var url = Uri.https(domain, "/products.json", {"auth": "$authtoken"});
     try {
       final res = await http.get(url);
       final extractedData = json.decode(res.body) as Map<String, dynamic>;
@@ -84,6 +86,12 @@ class Products with ChangeNotifier {
       if (extractedData == null) {
         return;
       }
+
+      url = Uri.https(
+          domain, "/userFavorites/$userId.json", {"auth": "$authtoken"});
+
+      final favoriteResponse = await http.get(url);
+      final favoriteData = json.decode(favoriteResponse.body);
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(
           Product(
@@ -91,7 +99,8 @@ class Products with ChangeNotifier {
             title: prodData["title"],
             description: prodData["description"],
             price: prodData["price"],
-            isFavorite: prodData["isFavorite"],
+            isFavorite:
+                favoriteData == null ? false : favoriteData[prodId] ?? false,
             imageUrl: prodData["imageUrl"],
           ),
         );
@@ -114,7 +123,6 @@ class Products with ChangeNotifier {
             "description": product.description,
             "imageUrl": product.imageUrl,
             "price": product.price,
-            "isFavorite": product.isFavorite,
           },
         ),
       );
