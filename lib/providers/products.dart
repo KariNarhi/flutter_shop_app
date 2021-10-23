@@ -46,6 +46,9 @@ class Products with ChangeNotifier {
   ];
 
   // bool _showFavoritesOnly = false;
+  final String authtoken;
+
+  Products(this.authtoken, this._items);
 
   List<Product> get items {
     // if (_showFavoritesOnly) {
@@ -73,7 +76,7 @@ class Products with ChangeNotifier {
   // }
 
   Future<void> fetchAndSetProducts() async {
-    final url = Uri.https(domain, "/products.json");
+    final url = Uri.https(domain, "/products.json", {"auth": "$authtoken"});
     try {
       final res = await http.get(url);
       final extractedData = json.decode(res.body) as Map<String, dynamic>;
