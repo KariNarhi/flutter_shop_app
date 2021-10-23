@@ -104,7 +104,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    final url = Uri.https(domain, "/products.json");
+    final url = Uri.https(domain, "/products.json", {"auth": "$authtoken"});
     try {
       final res = await http.post(
         url,
@@ -138,7 +138,8 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product newProduct) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
-      final url = Uri.https(domain, "/products/$id.json");
+      final url =
+          Uri.https(domain, "/products/$id.json", {"auth": "$authtoken"});
       await http.patch(url,
           body: json.encode({
             "title": newProduct.title,
@@ -154,7 +155,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final url = Uri.https(domain, "/products/$id.json");
+    final url = Uri.https(domain, "/products/$id.json", {"auth": "$authtoken"});
     final existingProductIndex =
         _items.indexWhere((product) => product.id == id);
     var existingProduct = _items[existingProductIndex];
